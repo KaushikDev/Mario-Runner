@@ -13,6 +13,10 @@ bgImg.src = "images/mariobg.png";
 playerImg.src = "images/mario.png";
 goombaImg.src = "images/goomba.png";
 
+var game = {
+    state : true,
+    score : 0
+}
 
 var player = {
     x : 15,
@@ -31,7 +35,7 @@ objects[0]={
     y : cHeight-90,
     w : 50,
     h : 50,
-    speed : 0 
+   
 }
 
 var controller = {
@@ -67,7 +71,16 @@ document.addEventListener('keyup', controller.keyListener);
 
 
 function draw(){
+    ctx.drawImage(bgImg, 0, 0 , cWidth, cHeight);
+    drawPlayer();
+    drawObjects();
+    drawScore();
+    drawDevInfo();
+    requestAnimationFrame(draw);
+}
 
+
+function drawPlayer(){
     if(controller.moveLeft){
         player.xVelocity -= 0.5;
     }
@@ -96,16 +109,23 @@ function draw(){
         player.canJump = true;
     }
 
-
-    ctx.drawImage(bgImg, 0, 0 , cWidth, cHeight);
+    if(player.x > cWidth || player.x < 0){
+        player.x = 0; 
+    }
     ctx.drawImage(playerImg, player.x, player.y, player.w, player.h);
+}
+
+function drawObjects(){
 
     for (let i = 0; i < objects.length; i++) {
         ctx.drawImage(goombaImg, objects[i].x, objects[i].y, objects[i].w, objects[i].h);
         
-        objects[i].x--;
+       objects[i].x-=1;
+       
 
-        if(objects[i].x === cWidth/2){
+
+
+        if(objects[i].x == cWidth/2){
             objects.push({
                 x : cWidth-110,
                 y : cHeight-90,
@@ -113,15 +133,35 @@ function draw(){
                 h : 50 
             });
         }
+
         
+
+        game.state = collisionDetection(i);
+
+        if(game.state){
+            game.score = game.score + 5;
+        }
         
     }
-    
-
-
-
-
-    requestAnimationFrame(draw);
 }
 
-draw();
+
+function collisionDetection(i){
+    if (player.x+player.w > objects[i].x && player.x < objects[i].x+objects[i].w && (player.y+player.h > objects[i].y)) {
+        return false;
+    }
+}
+
+function drawScore(){
+    ctx.font = "15px Verdana";
+    ctx.fillText("Score : "+game.score, 15, 20);
+    ctx.fillStyle="white";
+}
+
+function drawDevInfo(){
+    ctx.font = "15px Verdana";
+    ctx.fillText("@KaushikCodeArts - 2019 ", cWidth/2-15, 20 );
+    ctx.fillStyle="white";
+}
+
+setInterval(draw(), 10);
