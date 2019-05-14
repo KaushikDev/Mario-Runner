@@ -129,7 +129,7 @@ function drawObjects(){
 
 //var now = Date.now;
 
-timeElapsed = now - startTime;
+//timeElapsed = now - startTime;
 //console.log(timeElapsed);
 
         if(objects[i].x == cWidth/2){
